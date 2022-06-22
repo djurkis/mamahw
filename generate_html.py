@@ -55,8 +55,8 @@ def postprocess_feed(feed):
     return feed_list
 
 
-def fetch_objects(start,end,npools=50,nthreads=50):
-    
+def fetch_objects(start, end, npools=50, nthreads=50):
+
     date_range = (
         pd.date_range(start, end, freq="7D", normalize=True, inclusive="left")
         .strftime("%Y-%m-%d")
@@ -82,9 +82,10 @@ def fetch_objects(start,end,npools=50,nthreads=50):
 
     return results
 
-def generate(start, end, npools=50, nthreads=50, sort_key="miss_distance_lunar"):
 
-    results = fetch_objects(start,end)
+def generate(start, end, sort_key="miss_distance_lunar"):
+
+    results = fetch_objects(start, end)
 
     feed_lists = list(map(postprocess_feed, results))
     object_list = list(chain.from_iterable(feed_lists))
