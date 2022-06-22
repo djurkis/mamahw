@@ -10,5 +10,6 @@ Data comes from he API of NeoWs service at https://api.nasa.gov/ (free registrat
 
 To run you need your api_key.txt and run:
 `export FLASK_APP=hw
+
 flask run`
 
