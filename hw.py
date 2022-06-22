@@ -12,14 +12,6 @@ def form():
     return render_template("form.html")
 
 
-@app.route("/table")
-def tab():
-    with open("templates/table.html", "r") as f:
-        data = f.read()
-
-    return data
-
-
 @app.route("/data/", methods=["POST", "GET"])
 def data():
     if request.method == "GET":

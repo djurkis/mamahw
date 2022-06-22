@@ -55,8 +55,8 @@ def postprocess_feed(feed):
     return feed_list
 
 
-def generate(start, end, npools=50, nthreads=50, sort_key="miss_distance_lunar"):
-
+def fetch_objects(start,end,npools=50,nthreads=50):
+    
     date_range = (
         pd.date_range(start, end, freq="7D", normalize=True, inclusive="left")
         .strftime("%Y-%m-%d")
@@ -64,10 +64,9 @@ def generate(start, end, npools=50, nthreads=50, sort_key="miss_distance_lunar")
     )
     date_range.append(end)
     params = list(zip(date_range, date_range[1:], cycle([KEY])))
-    results = []
 
     cmanager = urllib3.PoolManager(num_pools=npools, maxsize=50)
-
+    results = []
     with ThreadPoolExecutor(nthreads) as exec:
         futurs = {exec.submit(download, p, cmanager): p[0] for p in params}
         for f in as_completed(futurs):
@@ -80,6 +79,12 @@ def generate(start, end, npools=50, nthreads=50, sort_key="miss_distance_lunar")
                 continue
             else:
                 logging.debug(f"{start_d} length: {len(data)}")
+
+    return results
+
+def generate(start, end, npools=50, nthreads=50, sort_key="miss_distance_lunar"):
+
+    results = fetch_objects(start,end)
 
     feed_lists = list(map(postprocess_feed, results))
     object_list = list(chain.from_iterable(feed_lists))
