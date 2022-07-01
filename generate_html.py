@@ -2,6 +2,7 @@ import json
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from itertools import chain, cycle
+from functools import lru_cache
 
 import pandas as pd
 import urllib3
@@ -16,11 +17,15 @@ BASE_HTML = "https://api.nasa.gov/neo/rest/v1/feed"
 
 # handle not 200
 def download(params, cmanager, base=BASE_HTML):
-    values = {"start_date": params[0], "end_date": params[1], "api_key": params[2]}
-    r = cmanager.request("GET", base, fields=values)
-    reply = r.data.decode("utf-8")
-    return json.loads(reply)
 
+    @lru_cache(maxsize=1024)
+    def cache_dl(start,end,key): 
+        values = {"start_date": start, "end_date": end, "api_key": key}
+        r = cmanager.request("GET", base, fields=values)
+        reply = r.data.decode("utf-8")
+        return json.loads(reply)
+
+    return cache_dl(*params)
 
 def dict2row(d):
     vals = {}
