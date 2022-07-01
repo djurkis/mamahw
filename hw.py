@@ -27,8 +27,10 @@ def data():
         start, end = form_data["start_date"], form_data["end_date"]
 
         try:
-            datetime.datetime.strptime(start, "%Y-%m-%d")
-            datetime.datetime.strptime(end, "%Y-%m-%d")
+            start_d = datetime.datetime.strptime(start, "%Y-%m-%d")
+            end_d = datetime.datetime.strptime(end, "%Y-%m-%d")
+            if start_d > end_d:
+                return "<p> START DATE > END DATE </p>"
         except ValueError:
             return "<p> invalid format </p"
 
